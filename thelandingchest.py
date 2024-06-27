@@ -20,6 +20,7 @@ from pydirectinput import (
 )
 import time
 from PIL import ImageGrab
+from functools import wraps
 
 pydirectinput.FAILSAFE = False
 
@@ -45,6 +46,7 @@ class TimeSettings:
 
 @dataclasses.dataclass
 class RunningSettings:
+    debug: bool     # 是否开启调试模式
     circulate: int  # 循环次数 即一大轮要执行多少小轮 默认15
     movetimes: int
     movepx: int  # 控制开图时鼠标移动到最左边后往右移的位移量 (x,y) x移动次数 y代表每次移动像素 默认为(20,50) 有问题请尝试(20,40)
@@ -73,6 +75,33 @@ black = (0, 0, 0)
 tabo = 0
 
 
+def callFuncLogger():
+    def callFuncLoggerDecorator(func):
+        @wraps(func)
+        def funcWarpped(*args, **kwargs):
+            if run_settings.debug:
+                print(f'{func.__name__} -> {args}, {kwargs} ...')
+            warppedRes = func(*args, **kwargs)
+            if run_settings.debug:
+                print(f'{func.__name__} -> Done √')
+            return warppedRes
+        return funcWarpped
+    return callFuncLoggerDecorator
+
+
+keyDown    = callFuncLogger()(keyDown   )
+keyUp      = callFuncLogger()(keyUp     )
+move       = callFuncLogger()(move      )
+moveRel    = callFuncLogger()(moveRel   )
+moveTo     = callFuncLogger()(moveTo    )
+mouseDown  = callFuncLogger()(mouseDown )
+mouseUp    = callFuncLogger()(mouseUp   )
+press      = callFuncLogger()(press     )
+leftClick  = callFuncLogger()(leftClick )
+rightClick = callFuncLogger()(rightClick)
+
+
+@callFuncLogger()
 def turn(times: int, px: int):
     i = 1
     while i < times:
@@ -81,6 +110,7 @@ def turn(times: int, px: int):
     i = 1
 
 
+@callFuncLogger()
 def run(t: int):
     keyDown("w")
     time.sleep(0.01)
@@ -90,6 +120,7 @@ def run(t: int):
     keyUp("shiftleft")
 
 
+@callFuncLogger()
 def enter1():
     j = 0
     while j != 3:
@@ -114,6 +145,7 @@ def enter1():
     leftClick()
 
 
+@callFuncLogger()
 def enter():
     press(base_settings.map)
     time.sleep(time_settings.waittime_after_run)
@@ -127,12 +159,14 @@ def enter():
     time.sleep(0.2)
 
 
+@callFuncLogger()
 def color(x, y):
     screenshot = ImageGrab.grab()
     pixel_color = screenshot.getpixel((x, y))
     return pixel_color
 
 
+@callFuncLogger()
 def start():
     global tabo
     global white

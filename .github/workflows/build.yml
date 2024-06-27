@@ -3,7 +3,7 @@ on:
   push:
     branches: [ my/version ]
 jobs:
-  build-win64-debug:
+  build-win64:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3

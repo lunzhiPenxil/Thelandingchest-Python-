@@ -87,7 +87,7 @@ def callFuncLogger():
             warppedRes = func(*args, **kwargs)
             gFuncIndent -= 1
             if run_settings.debug:
-                print((' ├' * gFuncIndent) + f' └{func.__name__} -> Done √')
+                print((' │' * gFuncIndent) + f' └{func.__name__} -> Done √')
             return warppedRes
         return funcWarpped
     return callFuncLoggerDecorator

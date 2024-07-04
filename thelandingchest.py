@@ -74,16 +74,20 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 tabo = 0
 
+gFuncIndent = 0
 
 def callFuncLogger():
     def callFuncLoggerDecorator(func):
         @wraps(func)
         def funcWarpped(*args, **kwargs):
+            global gFuncIndent
             if run_settings.debug:
-                print(f'{func.__name__} -> {args}, {kwargs} ...')
+                print((' │' * gFuncIndent) + f'{func.__name__} -> {args}, {kwargs} ...')
+            gFuncIndent += 1
             warppedRes = func(*args, **kwargs)
             if run_settings.debug:
-                print(f'{func.__name__} -> Done √')
+                print((' └' * gFuncIndent) + f'{func.__name__} -> Done √')
+            gFuncIndent -= 1
             return warppedRes
         return funcWarpped
     return callFuncLoggerDecorator
